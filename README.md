@@ -1,5 +1,9 @@
 # 🖋️ Ink & Graphite Atelier: Productivity Dashboard
 
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
+
 Welcome to the **Ink & Graphite Atelier**, a beautifully crafted productivity, habit, and file tracking dashboard designed to invoke the feeling of an architect's slate desk. The entire layout operates purely inside your local browser storage—providing offline-first, lightning-fast rendering without any risk of data loss on refresh!
 
 ### 🌟 Key Features
@@ -7,6 +11,30 @@ Welcome to the **Ink & Graphite Atelier**, a beautifully crafted productivity, h
 - **Persistent Data Layers:** Refreshed the page? Opened a new tab? Don't worry, your tasks are securely committed to an IndexedDB backend cache automatically.
 - **Chalk & Slate Dark Mode:** Toggling the mode completely reworks the visual theme utilizing high-contrast, sketch-oriented borders mapped to custom Tailwind utilities.
 - **Rhythm & Date Tracking:** Specify exact starting dates for new habits. 
+
+---
+
+## 🎨 Inside The Atelier
+
+### 1. Main Dashboard Overview
+Your command center. Enjoy quick oversight of your daily metrics, active rhythms, and overall progress rendered in a sleek monochromatic hand-drawn ink style.
+<br>
+<img src="./stitch_assets/dashboard.png" width="900" alt="Dashboard Hub">
+
+### 2. Consistency Heatmap & Habit Tracker
+The core of the system. Check off your rhythms dynamically; the entire "Github-style" heatmap calculates backward flawlessly utilizing strict `YYYY-MM-DD` datasets to give you beautiful density visualizations.
+<br>
+<img src="./stitch_assets/habit_tracker.png" width="900" alt="Habit Heatmap">
+
+### 3. Resource & File Organizer
+Store files, links, and documents directly into folders. Configure and link seamlessly to build your personal knowledge repository completely offline.
+<br>
+<img src="./stitch_assets/resource_hub.png" width="900" alt="Resource Architecture">
+
+### 4. Goal Countdown & Milestones
+Set strict dates and sub-milestones to physically watch your deadlines approach tick-by-tick.
+<br>
+<img src="./stitch_assets/goal_countdown.png" width="900" alt="Goals Hub">
 
 ---
 
