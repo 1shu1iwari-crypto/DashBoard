@@ -1,7 +1,7 @@
 # 🖋️ Ink & Graphite Atelier: Productivity Dashboard
 
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+
 </div>
 
 Welcome to the **Ink & Graphite Atelier**, a beautifully crafted productivity, habit, and file tracking dashboard designed to invoke the feeling of an architect's slate desk. The entire layout operates purely inside your local browser storage—providing offline-first, lightning-fast rendering without any risk of data loss on refresh!
