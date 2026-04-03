@@ -1,146 +1,184 @@
-import { Target, Flag, ArrowRight, Plus, MoreVertical, CheckCircle2, Trash2 } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { Plus, X, Calendar as CalendarIcon, Edit3 } from 'lucide-react';
+import { cn, calculateGoalProgress } from '../lib/utils';
 import { useAppContext } from '../context/AppContext';
 
 export default function GoalCenter() {
-  const { goals, addGoal, deleteGoal, milestones, toggleMilestone } = useAppContext();
-
-  // Calculate overall progress for the hero goal based on milestones
-  const completedMilestones = milestones.filter((m: any) => m.done).length;
-  const heroProgress = milestones.length > 0 ? Math.round((completedMilestones / milestones.length) * 100) : 0;
+  const { goals, addGoal, deleteGoal, updateGoal } = useAppContext();
+  const heroStats = goals.length > 0 ? calculateGoalProgress(goals[0]) : null;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <header className="flex items-end justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-1">Goal Center</h1>
-          <p className="text-slate-500 dark:text-slate-400">Set, track, and achieve your long-term objectives.</p>
+    <div className="space-y-12 animate-in fade-in duration-500 pb-16">
+      
+      {/* Goal Center Header */}
+      <section className="mb-12">
+        <div className="flex justify-between items-end mb-8">
+          <div>
+            <h2 className="font-headline text-5xl font-extrabold tracking-tighter uppercase mb-2">Goal Center</h2>
+            <p className="font-label text-sm uppercase tracking-widest text-outline">Tracking Intentions & Milestones</p>
+          </div>
+          <div className="bg-surface-container-low p-3 hand-drawn-border sketch-border hidden md:block">
+            <span className="font-headline font-bold text-xl">{goals.length} Active {goals.length === 1 ? 'Goal' : 'Goals'}</span>
+          </div>
         </div>
-        <button 
-          onClick={addGoal}
-          className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-colors shadow-sm"
-        >
-          <Plus size={18} />
-          New Goal
-        </button>
-      </header>
-
-      {/* Hero Goal */}
-      {goals.length > 0 ? (
-        <section className="relative overflow-hidden bg-slate-900 dark:bg-slate-950 rounded-3xl p-8 md:p-10 text-white shadow-xl">
-          {/* Abstract background elements */}
-          <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl"></div>
-          
-          <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
-            <div className="flex-1 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-medium uppercase tracking-widest text-purple-200">
-                <Flag size={14} />
-                Primary Focus
+        
+        {/* If there are goals, show the primary goal at the top as the "Upcoming Next" milestone */}
+        {goals.length > 0 && heroStats && (
+          <div className="bg-surface-container-lowest sketch-border p-10 ghost-border relative overflow-hidden mt-8">
+            <div className="absolute top-4 right-6 transform rotate-3 bg-black text-white px-4 py-1 font-headline font-bold uppercase text-xs hidden sm:block">Primary Focus</div>
+            <h3 className="font-headline text-2xl font-bold uppercase mb-8">Upcoming Next: <span className="underline decoration-4">{goals[0].title}</span></h3>
+            
+            <div className="flex flex-wrap items-center gap-6 md:gap-12 mb-10">
+              <div className="text-center">
+                <div className="font-headline text-6xl md:text-8xl font-black tracking-tighter leading-none">{heroStats.daysLeft}</div>
+                <div className="font-label uppercase text-xs tracking-widest mt-2">{heroStats.daysLeft === 1 ? 'Day Left' : 'Days Left'}</div>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">Launch MVP by Q4</h2>
-              <p className="text-slate-300 max-w-xl text-lg">
-                Complete the core features, finalize the design system, and deploy the initial version to beta testers.
-              </p>
+              <div className="font-headline text-4xl md:text-6xl font-thin opacity-30">:</div>
+              <div className="text-center">
+                <div className="font-headline text-6xl md:text-8xl font-black tracking-tighter leading-none">{heroStats.progress}%</div>
+                <div className="font-label uppercase text-xs tracking-widest mt-2">Time Elapsed</div>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between items-center font-label text-xs uppercase tracking-widest font-bold">
+                <span>Timeline Progress</span>
+                <span>{heroStats.daysPassed} days / {Math.round(heroStats.totalDays)} total</span>
+              </div>
               
-              <div className="pt-4 flex items-center gap-6">
-                <div>
-                  <div className="text-3xl font-bold font-mono">14</div>
-                  <div className="text-xs text-slate-400 uppercase tracking-wider font-medium mt-1">Days Left</div>
+              {/* Sketchy Progress Bar */}
+              <div className="h-10 w-full border-4 border-black relative bg-surface-container">
+                <div className="h-full bg-black flex overflow-hidden transition-all duration-500" style={{ width: `${heroStats.progress}%` }}>
+                  <div className="w-full h-full hatch-pattern opacity-40"></div>
                 </div>
-                <div className="w-px h-10 bg-white/20"></div>
-                <div>
-                  <div className="text-3xl font-bold font-mono">{heroProgress}%</div>
-                  <div className="text-xs text-slate-400 uppercase tracking-wider font-medium mt-1">Completed</div>
+                {/* Hatch marks/Scale */}
+                <div className="absolute inset-0 flex justify-between px-1 pointer-events-none">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="w-px h-2 bg-black mt-auto mb-1"></div>
+                  ))}
                 </div>
               </div>
             </div>
-
-            <div className="w-full md:w-72 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
-              <h3 className="font-semibold mb-4 flex items-center justify-between">
-                Key Milestones
-                <span className="text-xs bg-white/20 px-2 py-1 rounded-md">{completedMilestones}/{milestones.length}</span>
-              </h3>
-              <div className="space-y-3">
-                {milestones.map((m: any) => (
-                  <div 
-                    key={m.id} 
-                    onClick={() => toggleMilestone(m.id)}
-                    className="flex items-center gap-3 cursor-pointer group"
-                  >
-                    <CheckCircle2 size={18} className={cn("transition-colors", m.done ? "text-purple-400" : "text-white/30 group-hover:text-white/60")} />
-                    <span className={cn("text-sm font-medium transition-colors", m.done ? "text-slate-200 line-through" : "text-white group-hover:text-slate-200")}>{m.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
-        </section>
-      ) : (
-        <section className="bg-slate-50 dark:bg-slate-900/30 border border-dashed border-slate-300 dark:border-slate-700 rounded-3xl p-12 text-center">
-          <div className="w-16 h-16 bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Target size={28} />
-          </div>
-          <h2 className="text-xl font-semibold mb-2">No Goals Set</h2>
-          <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">You haven't created any goals yet. Start setting your objectives to track your progress over time.</p>
-          <button 
-            onClick={addGoal}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-xl font-medium inline-flex items-center gap-2 transition-colors shadow-sm"
-          >
-            <Plus size={18} />
-            Create Your First Goal
-          </button>
-        </section>
-      )}
+        )}
+      </section>
 
-      {/* Goal Grid */}
+      {/* Goals Grid */}
       <section>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold">Other Objectives</h2>
-          <button className="text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-slate-200 flex items-center gap-1">
-            View Archive <ArrowRight size={16} />
-          </button>
+          <h3 className="font-headline text-xl font-black uppercase tracking-tight">Active Milestones</h3>
+          <div className="h-px flex-grow mx-6 bg-outline-variant"></div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {goals.map((goal: any) => (
-            <div key={goal.id} className="bg-white dark:bg-slate-900/50 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-xl group hover:border-slate-300 dark:hover:border-slate-700 transition-colors cursor-pointer relative">
-              <div className="flex justify-between items-start mb-6">
-                <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", goal.iconBg, goal.iconColor)}>
-                  <Target size={24} />
-                </div>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); deleteGoal(goal.id); }}
-                  className="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1"
-                  title="Delete goal"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
-              
-              <div className="mb-6">
-                <div className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">{goal.category}</div>
-                <h3 className="text-lg font-semibold">{goal.title}</h3>
-              </div>
+        {goals.length === 0 ? (
+           <section className="bg-surface-container-low sketch-border border-dashed p-12 text-center ghost-offset">
+             <div className="w-16 h-16 border-2 border-black border-dashed rounded-full flex items-center justify-center mx-auto mb-4 bg-surface">
+               <span className="font-headline text-3xl font-black">!</span>
+             </div>
+             <h2 className="text-xl font-headline font-black uppercase tracking-widest mb-2">No Goals Set</h2>
+             <p className="text-outline max-w-md mx-auto mb-6 italic">You haven't sketched out any milestones yet. Plant a seed for your future.</p>
+             <button 
+               onClick={addGoal}
+               className="bg-black text-white px-6 py-3 font-headline font-bold uppercase tracking-widest inline-flex items-center gap-2 hover:scale-105 transition-transform"
+             >
+               <Plus size={18} strokeWidth={2} />
+               Draft First Goal
+             </button>
+           </section>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            {goals.map((goal: any, index: number) => {
+              // Creating varied rotation for sketchy feel
+              const rotationClass = index % 3 === 0 ? '-rotate-3' : index % 3 === 1 ? 'rotate-2' : '-rotate-6';
+              const stats = calculateGoalProgress(goal);
+              return (
+                <div key={goal.id} className="bg-surface-container-lowest sketch-border p-6 ghost-border group relative flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start mb-4 gap-4">
+                      <input 
+                        type="text" 
+                        value={goal.title}
+                        onChange={(e) => updateGoal(goal.id, { title: e.target.value })}
+                        className="font-headline font-bold uppercase leading-tight w-full bg-transparent border-none p-0 sketch-underline focus:ring-0 text-lg"
+                        placeholder="Goal Title"
+                      />
+                      <button 
+                        onClick={() => deleteGoal(goal.id)}
+                        className="text-outline hover:text-error transition-colors shrink-0"
+                        title="Erase Goal"
+                      >
+                        <X size={20} strokeWidth={2} />
+                      </button>
+                    </div>
 
-              <div>
-                <div className="flex justify-between text-sm font-medium mb-2">
-                  <span>{goal.current} / {goal.total}</span>
-                  <span>{goal.progress}%</span>
+                    <textarea
+                      value={goal.description || ''}
+                      onChange={(e) => updateGoal(goal.id, { description: e.target.value })}
+                      className="w-full bg-transparent border-none p-0 font-body text-sm text-outline-variant sketch-underline focus:ring-0 min-h-[80px] resize-none mb-6"
+                      placeholder="Add bullet points, descriptions, or notes here..."
+                    />
+                  </div>
+                  
+                  <div>
+                    <div className="flex items-center gap-2 mb-6 sketch-underline pb-2 w-[max-content]">
+                      <CalendarIcon size={16} className="text-black/50" />
+                      <input 
+                        type="date" 
+                        value={goal.deadline || ''}
+                        onChange={(e) => updateGoal(goal.id, { deadline: e.target.value })}
+                        className="font-label uppercase text-xs font-bold bg-transparent border-none p-0 focus:ring-0 tracking-widest text-black"
+                      />
+                    </div>
+                    
+                    <div className="flex items-end justify-between mb-4">
+                      <div>
+                        <span className="font-headline text-4xl font-black">{stats.daysLeft}</span>
+                        <span className="font-label text-[10px] uppercase tracking-tighter ml-1">Days Left</span>
+                      </div>
+                      <div className={cn("w-16 h-16 border-2 border-black flex items-center justify-center bg-surface shrink-0", rotationClass)}>
+                        <span className="font-headline font-black text-2xl">{stats.progress}%</span>
+                      </div>
+                    </div>
+                    
+                    <div className="h-2 w-full bg-surface-container sketch-border overflow-hidden group-hover:h-4 transition-all">
+                      <div className="h-full bg-black hatch-pattern opacity-60 transition-all duration-500" style={{ width: `${stats.progress}%` }}></div>
+                    </div>
+                  </div>
                 </div>
-                <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                  <div className={cn("h-full rounded-full transition-all duration-500", goal.color)} style={{ width: `${goal.progress}%` }}></div>
-                </div>
+              );
+            })}
+
+            {/* Add New Goal Card */}
+            <button 
+              onClick={addGoal}
+              className="bg-surface-container-low sketch-border border-dashed p-6 border-outline flex flex-col items-center justify-center space-y-4 hover:bg-surface-container transition-colors group min-h-[220px]"
+            >
+              <div className="w-12 h-12 rounded-full border-2 border-black border-dashed flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Plus size={24} strokeWidth={2} />
               </div>
-            </div>
-          ))}
-          {goals.length === 0 && (
-            <div className="col-span-full text-center py-8 text-slate-500">
-              No active goals. Create one to get started!
-            </div>
-          )}
-        </div>
+              <span className="font-headline font-black uppercase tracking-widest text-sm">Add New Goal</span>
+            </button>
+            
+          </div>
+        )}
       </section>
+      
+      {/* Bottom Visual Anchor */}
+      {goals.length > 0 && (
+        <section className="mt-20 flex justify-center">
+          <div className="sketch-border p-8 max-w-2xl bg-white relative">
+            <div className="absolute -top-4 -left-4 bg-black text-white p-2 font-headline font-black leading-none">
+              !
+            </div>
+            <p className="font-body italic md:text-lg leading-relaxed text-center">
+               "The pencil is but an extension of the mind. To plan is to see the future before it exists."
+            </p>
+            <div className="mt-4 flex justify-center">
+               <div className="h-1 w-24 bg-black hatch-pattern opacity-20"></div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

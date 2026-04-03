@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Notebook - Goal Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Work+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hand-drawn effect utility */
+        .sketch-border {
+            border: 2px solid #000000;
+            border-radius: 4px 2px 5px 3px;
+        }
+        .sketch-underline {
+            border-bottom: 2px solid #000000;
+            border-radius: 0 0 4px 2px;
+        }
+        .hatch-pattern {
+            background-image: repeating-linear-gradient(
+                -45deg,
+                #000,
+                #000 1px,
+                transparent 1px,
+                transparent 8px
+            );
+        }
+        .ghost-border {
+            position: relative;
+        }
+        .ghost-border::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: -4px;
+            bottom: -4px;
+            border: 1px solid #c6c6c6;
+            z-index: -1;
+            border-radius: 4px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "inverse-on-surface": "#f0f1f1",
+                "secondary-container": "#d4d4d4",
+                "outline": "#777777",
+                "on-tertiary": "#e2e2e2",
+                "surface-container-low": "#f3f3f4",
+                "error": "#ba1a1a",
+                "on-secondary-container": "#1b1b1b",
+                "on-background": "#1a1c1c",
+                "surface": "#f9f9f9",
+                "primary-container": "#3b3b3b",
+                "on-primary-fixed": "#ffffff",
+                "secondary-fixed-dim": "#ababab",
+                "tertiary-container": "#747474",
+                "primary": "#000000",
+                "tertiary-fixed-dim": "#474747",
+                "on-primary-fixed-variant": "#e2e2e2",
+                "surface-dim": "#dadada",
+                "error-container": "#ffdad6",
+                "on-surface-variant": "#474747",
+                "primary-fixed": "#5e5e5e",
+                "on-surface": "#1a1c1c",
+                "surface-container-lowest": "#ffffff",
+                "on-tertiary-fixed-variant": "#e2e2e2",
+                "inverse-surface": "#2f3131",
+                "on-error": "#ffffff",
+                "surface-tint": "#5e5e5e",
+                "surface-container-high": "#e8e8e8",
+                "on-secondary-fixed-variant": "#3b3b3b",
+                "surface-container": "#eeeeee",
+                "secondary-fixed": "#c6c6c6",
+                "on-primary-container": "#ffffff",
+                "on-tertiary-fixed": "#ffffff",
+                "inverse-primary": "#c6c6c6",
+                "on-tertiary-container": "#ffffff",
+                "secondary": "#5e5e5e",
+                "surface-container-highest": "#e2e2e2",
+                "on-secondary-fixed": "#1b1b1b",
+                "tertiary": "#3b3b3b",
+                "on-primary": "#e2e2e2",
+                "surface-bright": "#f9f9f9",
+                "background": "#f9f9f9",
+                "on-secondary": "#ffffff",
+                "outline-variant": "#c6c6c6",
+                "primary-fixed-dim": "#474747",
+                "tertiary-fixed": "#5e5e5e",
+                "on-error-container": "#410002",
+                "surface-variant": "#e2e2e2"
+              },
+              fontFamily: {
+                "headline": ["Space Grotesk"],
+                "body": ["Work Sans"],
+                "label": ["Space Grotesk"]
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-white">
+<!-- SideNavBar Integration -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#f9f9f9] dark:bg-[#121212] border-r-2 border-black dark:border-white flex flex-col p-4 space-y-6 z-50">
+<div class="mb-4">
+<h1 class="text-xl font-black text-black dark:text-white font-headline">Workspace</h1>
+<p class="text-[10px] uppercase tracking-widest font-headline opacity-60">Hand-drawn Productivity</p>
+</div>
+<nav class="flex flex-col space-y-1">
+<a class="flex items-center space-x-3 text-black dark:text-white px-4 py-2 border border-transparent font-headline font-medium uppercase text-sm tracking-widest hover:border-black dark:hover:border-white transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 text-black dark:text-white px-4 py-2 border border-transparent font-headline font-medium uppercase text-sm tracking-widest hover:border-black dark:hover:border-white transition-all" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span>Resources</span>
+</a>
+<a class="flex items-center space-x-3 text-black dark:text-white px-4 py-2 border border-transparent font-headline font-medium uppercase text-sm tracking-widest hover:border-black dark:hover:border-white transition-all" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span>Habits</span>
+</a>
+<a class="bg-black dark:bg-white text-white dark:text-black rounded-[4px_2px_5px_3px] px-4 py-2 flex items-center space-x-3 font-headline font-medium uppercase text-sm tracking-widest" href="#">
+<span class="material-symbols-outlined">emoji_events</span>
+<span>Goals</span>
+</a>
+<a class="flex items-center space-x-3 text-black dark:text-white px-4 py-2 border border-transparent font-headline font-medium uppercase text-sm tracking-widest hover:border-black dark:hover:border-white transition-all" href="#">
+<span class="material-symbols-outlined">timer</span>
+<span>Pomodoro</span>
+</a>
+<a class="flex items-center space-x-3 text-black dark:text-white px-4 py-2 border border-transparent font-headline font-medium uppercase text-sm tracking-widest hover:border-black dark:hover:border-white transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="pt-8">
+<button class="w-full bg-primary text-on-primary py-4 font-headline font-bold uppercase tracking-tighter sketch-border flex items-center justify-center space-x-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">add</span>
+<span>New Entry</span>
+</button>
+</div>
+</aside>
+<!-- TopNavBar Integration -->
+<header class="ml-64 bg-[#f9f9f9] dark:bg-[#121212] border-b-2 border-black dark:border-white flex justify-between items-center px-8 py-4 sticky top-0 z-40">
+<div class="flex items-center space-x-8">
+<span class="text-2xl font-bold tracking-tighter uppercase text-black dark:text-white font-headline">The Notebook</span>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2 text-primary">search</span>
+<input class="pl-10 pr-4 py-1 bg-transparent border-b-2 border-black focus:outline-none font-headline uppercase text-xs tracking-widest placeholder:text-neutral-400" placeholder="Search milestones..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-6">
+<button class="font-headline tracking-tight text-black dark:text-white font-black underline decoration-2 underline-offset-4 active:scale-95 duration-75 uppercase text-sm">Add New</button>
+<span class="material-symbols-outlined text-primary cursor-pointer">dark_mode</span>
+</div>
+</header>
+<main class="ml-64 p-10 max-w-7xl">
+<!-- Goal Center Header -->
+<section class="mb-12">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-headline text-5xl font-extrabold tracking-tighter uppercase mb-2">Goal Center</h2>
+<p class="font-label text-sm uppercase tracking-widest text-outline">Tracking Intentions &amp; Milestones</p>
+</div>
+<div class="bg-surface-container p-3 sketch-border ghost-border">
+<span class="font-headline font-bold text-xl">12 Active Goals</span>
+</div>
+</div>
+<!-- Major Milestone: Product Launch -->
+<div class="bg-surface-container-lowest sketch-border p-10 ghost-border relative overflow-hidden">
+<div class="absolute top-4 right-6 transform rotate-3 bg-error text-white px-4 py-1 font-headline font-bold uppercase text-xs">High Priority</div>
+<h3 class="font-headline text-2xl font-bold uppercase mb-8">Upcoming Next: <span class="underline decoration-4">Product Launch</span></h3>
+<div class="flex flex-wrap items-center gap-12 mb-10">
+<div class="text-center">
+<div class="font-headline text-8xl font-black tracking-tighter leading-none">14</div>
+<div class="font-label uppercase text-xs tracking-widest mt-2">Days</div>
+</div>
+<div class="font-headline text-6xl font-thin opacity-30">:</div>
+<div class="text-center">
+<div class="font-headline text-8xl font-black tracking-tighter leading-none">22</div>
+<div class="font-label uppercase text-xs tracking-widest mt-2">Hours</div>
+</div>
+<div class="font-headline text-6xl font-thin opacity-30">:</div>
+<div class="text-center">
+<div class="font-headline text-8xl font-black tracking-tighter leading-none">45</div>
+<div class="font-label uppercase text-xs tracking-widest mt-2">Minutes</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center font-label text-xs uppercase tracking-widest font-bold">
+<span>Current Progress</span>
+<span>82%</span>
+</div>
+<!-- Sketchy Progress Bar -->
+<div class="h-10 w-full border-4 border-black relative">
+<div class="h-full w-[82%] bg-black flex overflow-hidden">
+<div class="w-full h-full hatch-pattern opacity-40"></div>
+</div>
+<!-- Hatch marks/Scale -->
+<div class="absolute inset-0 flex justify-between px-1 pointer-events-none">
+<div class="w-px h-2 bg-black mt-auto mb-1"></div>
+<div class="w-px h-2 bg-black mt-auto mb-1"></div>
+<div class="w-px h-2 bg-black mt-auto mb-1"></div>
+<div class="w-px h-2 bg-black mt-auto mb-1"></div>
+<div class="w-px h-2 bg-black mt-auto mb-1"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Goals Grid -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline text-xl font-black uppercase tracking-tight">Active Milestones</h3>
+<div class="h-px flex-grow mx-6 bg-outline-variant"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Goal Card 1 -->
+<div class="bg-surface-container-lowest sketch-border p-6 ghost-border group">
+<div class="flex justify-between items-start mb-4">
+<h4 class="font-headline font-bold uppercase leading-tight">Master <br/>Sketch Design</h4>
+<button class="material-symbols-outlined text-outline hover:text-error transition-colors">close</button>
+</div>
+<div class="flex items-end justify-between mb-4">
+<div>
+<span class="font-headline text-4xl font-black">08</span>
+<span class="font-label text-[10px] uppercase tracking-tighter ml-1">Days Left</span>
+</div>
+<div class="w-16 h-16 border-2 border-black flex items-center justify-center -rotate-3 bg-surface">
+<span class="font-headline font-black text-2xl">65%</span>
+</div>
+</div>
+<div class="h-2 w-full bg-surface-container sketch-border overflow-hidden">
+<div class="h-full w-[65%] bg-black hatch-pattern opacity-60"></div>
+</div>
+</div>
+<!-- Goal Card 2 -->
+<div class="bg-surface-container-lowest sketch-border p-6 ghost-border group">
+<div class="flex justify-between items-start mb-4">
+<h4 class="font-headline font-bold uppercase leading-tight">Read 12 <br/>Architecture Books</h4>
+<button class="material-symbols-outlined text-outline hover:text-error transition-colors">close</button>
+</div>
+<div class="flex items-end justify-between mb-4">
+<div>
+<span class="font-headline text-4xl font-black">31</span>
+<span class="font-label text-[10px] uppercase tracking-tighter ml-1">Days Left</span>
+</div>
+<div class="w-16 h-16 border-2 border-black flex items-center justify-center rotate-2 bg-surface">
+<span class="font-headline font-black text-2xl">25%</span>
+</div>
+</div>
+<div class="h-2 w-full bg-surface-container sketch-border overflow-hidden">
+<div class="h-full w-[25%] bg-black hatch-pattern opacity-60"></div>
+</div>
+</div>
+<!-- Add New Goal Card -->
+<button class="bg-surface-container-low sketch-border border-dashed p-6 border-outline flex flex-col items-center justify-center space-y-4 hover:bg-surface-container transition-colors group">
+<div class="w-12 h-12 rounded-full border-2 border-black border-dashed flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">add</span>
+</div>
+<span class="font-headline font-black uppercase tracking-widest text-sm">Add New Goal</span>
+</button>
+<!-- Goal Card 3 -->
+<div class="bg-surface-container-lowest sketch-border p-6 ghost-border group">
+<div class="flex justify-between items-start mb-4">
+<h4 class="font-headline font-bold uppercase leading-tight">London <br/>Exhibition Prep</h4>
+<button class="material-symbols-outlined text-outline hover:text-error transition-colors">close</button>
+</div>
+<div class="flex items-end justify-between mb-4">
+<div>
+<span class="font-headline text-4xl font-black">12</span>
+<span class="font-label text-[10px] uppercase tracking-tighter ml-1">Days Left</span>
+</div>
+<div class="w-16 h-16 border-2 border-black flex items-center justify-center -rotate-6 bg-surface">
+<span class="font-headline font-black text-2xl">90%</span>
+</div>
+</div>
+<div class="h-2 w-full bg-surface-container sketch-border overflow-hidden">
+<div class="h-full w-[90%] bg-black hatch-pattern opacity-60"></div>
+</div>
+</div>
+<!-- Goal Card 4 -->
+<div class="bg-surface-container-lowest sketch-border p-6 ghost-border group opacity-60">
+<div class="flex justify-between items-start mb-4">
+<h4 class="font-headline font-bold uppercase leading-tight">Morning <br/>Journaling Streak</h4>
+<button class="material-symbols-outlined text-outline hover:text-error transition-colors">close</button>
+</div>
+<div class="flex items-end justify-between mb-4">
+<div>
+<span class="font-headline text-4xl font-black">--</span>
+<span class="font-label text-[10px] uppercase tracking-tighter ml-1">Paused</span>
+</div>
+<div class="w-16 h-16 border-2 border-black flex items-center justify-center bg-surface">
+<span class="font-headline font-black text-2xl">12d</span>
+</div>
+</div>
+<div class="h-2 w-full bg-surface-container sketch-border overflow-hidden">
+<div class="h-full w-[40%] bg-outline hatch-pattern opacity-30"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Visual Anchor -->
+<section class="mt-20 flex justify-center">
+<div class="sketch-border p-8 max-w-2xl bg-white relative">
+<div class="absolute -top-4 -left-4 bg-black text-white p-2 flex items-center">
+<span class="material-symbols-outlined">lightbulb</span>
+</div>
+<p class="font-body italic text-lg leading-relaxed text-center">
+                    "The pencil is but an extension of the mind. To plan is to see the future before it exists."
+                </p>
+<div class="mt-4 flex justify-center">
+<div class="h-1 w-24 bg-black hatch-pattern opacity-20"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- FAB - Only if relevant but suppressed on transactional, keeping for high-level dashboard feel -->
+<button class="fixed bottom-8 right-8 bg-black text-white w-16 h-16 rounded-full flex items-center justify-center sketch-border shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] active:translate-y-1 active:shadow-none transition-all">
+<span class="material-symbols-outlined text-3xl">edit</span>
+</button>
+</body></html>

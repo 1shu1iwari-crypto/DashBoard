@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Notebook - Dashboard Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Work+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-on-surface": "#f0f1f1",
+                        "secondary-container": "#d4d4d4",
+                        "outline": "#777777",
+                        "on-tertiary": "#e2e2e2",
+                        "surface-container-low": "#f3f3f4",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#1b1b1b",
+                        "on-background": "#1a1c1c",
+                        "surface": "#f9f9f9",
+                        "primary-container": "#3b3b3b",
+                        "on-primary-fixed": "#ffffff",
+                        "secondary-fixed-dim": "#ababab",
+                        "tertiary-container": "#747474",
+                        "primary": "#000000",
+                        "tertiary-fixed-dim": "#474747",
+                        "on-primary-fixed-variant": "#e2e2e2",
+                        "surface-dim": "#dadada",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#474747",
+                        "primary-fixed": "#5e5e5e",
+                        "on-surface": "#1a1c1c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#e2e2e2",
+                        "inverse-surface": "#2f3131",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#5e5e5e",
+                        "surface-container-high": "#e8e8e8",
+                        "on-secondary-fixed-variant": "#3b3b3b",
+                        "surface-container": "#eeeeee",
+                        "secondary-fixed": "#c6c6c6",
+                        "on-primary-container": "#ffffff",
+                        "on-tertiary-fixed": "#ffffff",
+                        "inverse-primary": "#c6c6c6",
+                        "on-tertiary-container": "#ffffff",
+                        "secondary": "#5e5e5e",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-fixed": "#1b1b1b",
+                        "tertiary": "#3b3b3b",
+                        "on-primary": "#e2e2e2",
+                        "surface-bright": "#f9f9f9",
+                        "background": "#f9f9f9",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c6c6c6",
+                        "primary-fixed-dim": "#474747",
+                        "tertiary-fixed": "#5e5e5e",
+                        "on-error-container": "#410002",
+                        "surface-variant": "#e2e2e2"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Work Sans"],
+                        "label": ["Space Grotesk"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .sketchy-border {
+            border: 2px solid #000;
+            border-radius: 4px 2px 5px 3px;
+        }
+        .sketchy-underline {
+            border-bottom: 2px solid #000;
+            border-bottom-left-radius: 30% 5px;
+            border-bottom-right-radius: 40% 4px;
+        }
+        .sketch-circle {
+            border: 3px solid #000;
+            border-radius: 48% 52% 50% 50% / 48% 48% 52% 52%;
+        }
+        .hand-drawn-check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #000;
+            border-radius: 3px;
+            position: relative;
+        }
+        .hand-drawn-check.checked::after {
+            content: '✓';
+            position: absolute;
+            top: -5px;
+            left: 2px;
+            font-size: 1.2rem;
+            font-weight: 900;
+        }
+        .ghost-offset {
+            position: relative;
+        }
+        .ghost-offset::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            border: 1px solid #c6c6c6;
+            z-index: -1;
+            border-radius: inherit;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-black selection:text-white">
+<!-- Navigation Shell: SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-64 flex flex-col p-4 space-y-6 bg-[#f9f9f9] dark:bg-[#121212] border-r-2 border-black dark:border-white z-50">
+<div class="mb-8">
+<h1 class="text-xl font-black text-black dark:text-white font-headline">Workspace</h1>
+<p class="text-xs uppercase tracking-widest font-label text-neutral-500">Hand-drawn Productivity</p>
+</div>
+<div class="flex flex-col space-y-2 flex-grow">
+<!-- Active Tab: Dashboard -->
+<a class="bg-black dark:bg-white text-white dark:text-black rounded-[4px_2px_5px_3px] px-4 py-2 flex items-center gap-3 transition-transform active:-rotate-1 active:scale-95 group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label text-sm uppercase tracking-widest">Dashboard</span>
+</a>
+<a class="text-black dark:text-white px-4 py-2 border border-transparent flex items-center gap-3 hover:border-black dark:hover:border-white transition-all group" href="#">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+<span class="font-label text-sm uppercase tracking-widest">Resources</span>
+</a>
+<a class="text-black dark:text-white px-4 py-2 border border-transparent flex items-center gap-3 hover:border-black dark:hover:border-white transition-all group" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="font-label text-sm uppercase tracking-widest">Habits</span>
+</a>
+<a class="text-black dark:text-white px-4 py-2 border border-transparent flex items-center gap-3 hover:border-black dark:hover:border-white transition-all group" href="#">
+<span class="material-symbols-outlined" data-icon="emoji_events">emoji_events</span>
+<span class="font-label text-sm uppercase tracking-widest">Goals</span>
+</a>
+<a class="text-black dark:text-white px-4 py-2 border border-transparent flex items-center gap-3 hover:border-black dark:hover:border-white transition-all group" href="#">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+<span class="font-label text-sm uppercase tracking-widest">Pomodoro</span>
+</a>
+<a class="text-black dark:text-white px-4 py-2 border border-transparent flex items-center gap-3 hover:border-black dark:hover:border-white transition-all group" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label text-sm uppercase tracking-widest">Settings</span>
+</a>
+</div>
+<button class="mt-auto py-3 px-4 bg-black text-white font-headline font-bold uppercase tracking-tighter rounded-[2px_6px_3px_5px] hover:scale-105 active:scale-95 transition-all">
+            New Entry
+        </button>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-12 min-h-screen">
+<!-- TopNavBar (Horizontal Alignment) -->
+<header class="flex justify-between items-center mb-16 pb-4 border-b-2 border-black dark:border-white font-headline">
+<div class="flex items-center gap-4">
+<span class="text-2xl font-bold tracking-tighter uppercase text-black dark:text-white">The Notebook</span>
+<div class="relative ml-8">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-black" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-1 bg-transparent border-b-2 border-black focus:ring-0 focus:outline-none font-label text-sm uppercase" placeholder="Find inspiration..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="flex items-center gap-2 px-4 py-1 border-2 border-black hover:bg-black hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span class="text-sm font-bold uppercase tracking-tight">Add New</span>
+</button>
+<span class="material-symbols-outlined cursor-pointer hover:rotate-12 transition-transform" data-icon="dark_mode">dark_mode</span>
+</div>
+</header>
+<!-- Welcome Banner (Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+<div class="md:col-span-2 p-10 sketchy-border bg-surface-container-lowest ghost-offset">
+<h2 class="text-5xl font-headline font-black mb-4 tracking-tighter uppercase">Welcome back to your atelier.</h2>
+<p class="text-lg text-on-surface-variant max-w-xl font-light">The ink is fresh, and the pages are waiting. You have 3 deep focus sessions planned for today.</p>
+<div class="mt-8 flex gap-4">
+<div class="p-4 border border-black/20 rounded-lg">
+<span class="block text-2xl font-black font-headline">12</span>
+<span class="text-xs uppercase font-label">Entries this week</span>
+</div>
+<div class="p-4 border border-black/20 rounded-lg">
+<span class="block text-2xl font-black font-headline">85%</span>
+<span class="text-xs uppercase font-label">Goal Velocity</span>
+</div>
+</div>
+</div>
+<!-- Quick Pomodoro Snapshot (Mobile friendly) -->
+<div class="p-8 sketchy-border bg-black text-white flex flex-col items-center justify-center text-center">
+<div class="w-24 h-24 sketch-circle border-white flex items-center justify-center mb-4">
+<span class="text-3xl font-headline font-black">25:00</span>
+</div>
+<h3 class="font-headline font-bold uppercase tracking-widest text-sm">Deep Focus</h3>
+<button class="mt-4 px-6 py-2 bg-white text-black font-black uppercase text-xs rounded-sm hover:scale-105 transition-transform">Start Ink Flow</button>
+</div>
+</section>
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Habit Tracker (Col 4) -->
+<section class="lg:col-span-4 space-y-6">
+<div class="flex justify-between items-end mb-4">
+<h3 class="text-2xl font-headline font-black uppercase tracking-tighter underline decoration-black decoration-2 underline-offset-8">Daily Rituals</h3>
+<span class="material-symbols-outlined cursor-pointer text-outline hover:text-black" data-icon="edit_note">edit_note</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="hand-drawn-check checked"></div>
+<span class="text-lg font-medium group-hover:italic transition-all">Morning Sketchbook</span>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="hand-drawn-check checked"></div>
+<span class="text-lg font-medium group-hover:italic transition-all">Archival Filing</span>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="hand-drawn-check"></div>
+<span class="text-lg font-medium group-hover:italic transition-all">30m Rapid Prototyping</span>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="hand-drawn-check"></div>
+<span class="text-lg font-medium group-hover:italic transition-all">Evening Review</span>
+</div>
+</div>
+<button class="w-full py-4 mt-4 border-2 border-dashed border-black/30 font-label uppercase text-xs tracking-widest hover:border-black transition-colors">
+                    Add ritual
+                </button>
+</section>
+<!-- Resource Manager (Col 8) -->
+<section class="lg:col-span-8">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-2xl font-headline font-black uppercase tracking-tighter">Resource Manager</h3>
+<div class="flex gap-2">
+<button class="p-2 sketchy-border hover:bg-black hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="upload_file">upload_file</span>
+</button>
+<button class="p-2 sketchy-border hover:bg-black hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="link">link</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Resource Card 1 -->
+<div class="p-6 sketchy-border bg-white group hover:-translate-y-1 transition-transform">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-4xl" data-icon="description">description</span>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-error" data-icon="delete_outline">delete_outline</span>
+</div>
+<h4 class="font-headline font-bold text-lg leading-tight mb-2">Q4 Project_Blueprint.pdf</h4>
+<p class="text-xs text-outline uppercase font-label">Uploaded 2 days ago • 4.2 MB</p>
+<div class="mt-4 pt-4 border-t border-black/10 flex justify-end">
+<span class="material-symbols-outlined cursor-pointer" data-icon="open_in_new">open_in_new</span>
+</div>
+</div>
+<!-- Resource Card 2 -->
+<div class="p-6 sketchy-border bg-white group hover:-translate-y-1 transition-transform">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-4xl" data-icon="palette">palette</span>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-error" data-icon="delete_outline">delete_outline</span>
+</div>
+<h4 class="font-headline font-bold text-lg leading-tight mb-2">Aesthetic Reference Board</h4>
+<p class="text-xs text-outline uppercase font-label">External Link • are.na</p>
+<div class="mt-4 pt-4 border-t border-black/10 flex justify-end">
+<span class="material-symbols-outlined cursor-pointer" data-icon="link">link</span>
+</div>
+</div>
+<!-- Resource Card 3 -->
+<div class="p-6 bg-surface-container-low border-2 border-black border-dashed flex flex-col items-center justify-center min-h-[160px] cursor-pointer hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-3xl mb-2" data-icon="add_circle">add_circle</span>
+<span class="font-label uppercase text-xs tracking-tighter">Add new asset</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Bottom Grid: Goals & Timer -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-12">
+<!-- Goal Countdown (Col 7) -->
+<section class="lg:col-span-7 p-8 sketchy-border bg-white ghost-offset">
+<h3 class="text-2xl font-headline font-black uppercase tracking-tighter mb-8">Goal Countdowns</h3>
+<div class="space-y-10">
+<div>
+<div class="flex justify-between items-end mb-3">
+<h4 class="font-headline font-bold text-xl">Finish Manuscript</h4>
+<span class="font-label text-sm">14 Days Left</span>
+</div>
+<div class="h-4 w-full border-2 border-black relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full bg-black w-[75%]"></div>
+</div>
+<p class="mt-2 text-xs uppercase text-outline">75% complete • 120/160 pages drafted</p>
+</div>
+<div>
+<div class="flex justify-between items-end mb-3">
+<h4 class="font-headline font-bold text-xl">Exhibition Opening</h4>
+<span class="font-label text-sm">32 Days Left</span>
+</div>
+<div class="h-4 w-full border-2 border-black relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full bg-black w-[40%]"></div>
+</div>
+<p class="mt-2 text-xs uppercase text-outline">40% complete • Venue secured, framing in progress</p>
+</div>
+</div>
+</section>
+<!-- Focus Module (Col 5) -->
+<section class="lg:col-span-5 p-8 sketchy-border bg-surface-container">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline font-black uppercase text-xl">Deep Focus</h3>
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex flex-col items-center py-6">
+<div class="w-48 h-48 sketch-circle border-4 flex flex-col items-center justify-center mb-8 relative">
+<span class="text-5xl font-headline font-black tracking-tighter">25:00</span>
+<span class="text-[10px] uppercase font-label mt-2">Current Session</span>
+</div>
+<div class="flex gap-4 w-full">
+<button class="flex-grow py-3 sketchy-border bg-black text-white font-headline font-bold uppercase hover:scale-95 transition-transform">
+                            Start Focus
+                        </button>
+<button class="px-4 py-3 sketchy-border bg-white text-black hover:bg-black hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="refresh">refresh</span>
+</button>
+</div>
+<div class="mt-8 grid grid-cols-3 gap-4 w-full text-center">
+<div class="p-2 border border-black/10">
+<span class="block text-xl font-bold font-headline">4</span>
+<span class="text-[9px] uppercase font-label">Daily Goal</span>
+</div>
+<div class="p-2 border border-black/10">
+<span class="block text-xl font-bold font-headline">1</span>
+<span class="text-[9px] uppercase font-label">Completed</span>
+</div>
+<div class="p-2 border border-black/10">
+<span class="block text-xl font-bold font-headline">75m</span>
+<span class="text-[9px] uppercase font-label">Total Time</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer / Credits -->
+<footer class="mt-24 pt-8 border-t border-black/10 flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity">
+<p class="font-label text-xs uppercase tracking-widest">© 2024 The Notebook Atelier • Digitally Bound</p>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-sm cursor-pointer" data-icon="help">help</span>
+<span class="material-symbols-outlined text-sm cursor-pointer" data-icon="info">info</span>
+</div>
+</footer>
+</main>
+<!-- Contextual Floating Action Button (Only on main dashboard) -->
+<button class="fixed bottom-8 right-8 w-16 h-16 bg-black text-white rounded-full flex items-center justify-center hover:scale-110 active:scale-90 transition-transform z-50 group">
+<span class="material-symbols-outlined text-3xl transition-transform group-hover:rotate-90" data-icon="add">add</span>
+</button>
+</body></html>

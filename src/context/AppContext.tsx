@@ -1,71 +1,181 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import { FileText, Image as ImageIcon, FileArchive, Flame, CheckCircle, Target } from 'lucide-react';
+import { get, set } from 'idb-keyval';
 
 // Initial Data
 const initialHabits: any[] = [];
 const initialFiles: any[] = [];
+const initialFolders: any[] = [];
 const initialGoals: any[] = [];
 const initialMilestones: any[] = [];
 
 const AppContext = createContext<any>(null);
 
-export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [habits, setHabits] = useState(initialHabits);
-  const [files, setFiles] = useState(initialFiles);
-  const [goals, setGoals] = useState(initialGoals);
-  const [milestones, setMilestones] = useState(initialMilestones);
+function usePersistedState<T>(key: string, initialValue: T) {
+  const [state, setState] = useState<T>(initialValue);
 
-  // Generate heatmap once so it doesn't flash on re-renders
-  const heatmapData = useMemo(() => {
-    const days = [];
-    for (let i = 0; i < 7 * 12; i++) {
-      days.push(0); // Empty heatmap
+  useEffect(() => {
+    get(key).then(val => {
+      if (val !== undefined && val !== null) {
+        if (Array.isArray(initialValue) && !Array.isArray(val)) return;
+        setState(val);
+      }
+    }).catch(e => console.error(e));
+  }, [key]);
+
+  const setPersistedState = (value: T | ((prev: T) => T)) => {
+    setState(prev => {
+      const nextValue = typeof value === 'function' ? (value as any)(prev) : value;
+      set(key, nextValue).catch(e => console.error(e));
+      return nextValue;
+    });
+  };
+
+  return [state, setPersistedState] as const;
+}
+
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [habits, setHabits] = usePersistedState<any[]>('notebook-habits', initialHabits);
+  const [files, setFiles] = usePersistedState<any[]>('notebook-files', initialFiles);
+  const [folders, setFolders] = usePersistedState<any[]>('notebook-folders', initialFolders);
+  const [goals, setGoals] = usePersistedState<any[]>('notebook-goals', initialGoals);
+  const [milestones, setMilestones] = usePersistedState<any[]>('notebook-milestones', initialMilestones);
+  
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark' || 
+      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
+
+  // Generate a totally literal calendar heatmap synchronized to actual YYYY-MM-DD
+  const heatmapData = useMemo(() => {
+    const totalDays = 52 * 7; // 364 days
+    const days = new Array(totalDays).fill(0);
+    
+    const d = new Date();
+    d.setHours(0,0,0,0);
+    const dayOfWeek = d.getDay(); 
+    const diffToSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+    const sundayOfThisWeek = new Date(d);
+    sundayOfThisWeek.setDate(d.getDate() + diffToSunday);
+
+    for (let i = 0; i < totalDays; i++) {
+        const offset = i - (totalDays - 1);
+        const cellDate = new Date(sundayOfThisWeek);
+        cellDate.setDate(sundayOfThisWeek.getDate() + offset);
+        
+        const dateStr = `${cellDate.getFullYear()}-${String(cellDate.getMonth()+1).padStart(2,'0')}-${String(cellDate.getDate()).padStart(2,'0')}`;
+
+        let completedCount = 0;
+        habits.forEach((habit: any) => {
+            if (habit.dates && habit.dates[dateStr]) {
+                completedCount++;
+            }
+        });
+        
+        days[i] = Math.min(completedCount, 4) as 0 | 1 | 2 | 3 | 4;
+    }
+    
     return days;
-  }, []);
+  }, [habits]);
 
   // Actions
-  const toggleHabitDay = (habitId: number, dayIndex: number) => {
+  const toggleHabitDate = (habitId: number, dateStr: string) => {
     setHabits(habits.map(h => {
       if (h.id === habitId) {
-        const newDays = [...h.days];
-        const isCompleted = !newDays[dayIndex];
-        newDays[dayIndex] = isCompleted;
+        const safeDates = h.dates || {};
+        const isCompleted = !safeDates[dateStr];
+        
         return {
           ...h,
-          days: newDays,
-          streak: isCompleted ? h.streak + 1 : Math.max(0, h.streak - 1)
+          dates: { ...safeDates, [dateStr]: isCompleted },
+          // Convert legacy property format automatically so it doesn't break
+          days: h.days || [false, false, false, false, false, false, false]
         };
       }
       return h;
     }));
   };
 
-  const addHabit = () => {
+  const addHabit = (name?: string, time?: string, startDate?: string) => {
+    const defaultStart = new Date().toISOString().split('T')[0];
     const newHabit = { 
       id: Date.now(),
-      name: `New Habit ${habits.length + 1}`, 
-      time: '15 mins',
+      name: name || `New Habit ${habits.length + 1}`, 
+      time: time || '15 mins',
       category: 'General', 
+      startDate: startDate || defaultStart,
+      dates: {}, 
       streak: 0, 
-      icon: CheckCircle, 
       color: 'text-indigo-500', 
-      bg: 'bg-indigo-50 dark:bg-indigo-500/10', 
-      days: [false, false, false, false, false, false, false] 
+      bg: 'bg-indigo-50 dark:bg-indigo-500/10'
     };
     setHabits([newHabit, ...habits]);
   };
 
-  const addFile = () => {
-    const newFile = { 
-      id: Date.now(),
-      name: `New Upload ${files.length + 1}.pdf`, 
-      type: 'PDF', 
-      size: `${(Math.random() * 10).toFixed(1)} MB`, 
-      icon: FileText, 
-      color: 'text-indigo-500', 
-      bg: 'bg-indigo-50 dark:bg-indigo-500/10' 
-    };
+  const removeHabit = (id: number) => {
+    setHabits(habits.filter(h => h.id !== id));
+  };
+
+  const updateFileName = (id: number, newName: string) => {
+    setFiles(files.map(f => f.id === id ? { ...f, name: newName } : f));
+  };
+
+  const addFolder = (name: string) => {
+    const newFolder = { id: Date.now(), name };
+    setFolders([newFolder, ...folders]);
+  };
+
+  const deleteFolder = (id: number) => {
+    setFolders(folders.filter(f => f.id !== id));
+    // Optional: Also delete files within that folder, or move them to root
+    setFiles(files.filter(f => f.folderId !== id));
+  };
+
+  const updateFolderName = (id: number, newName: string) => {
+    setFolders(folders.map(f => f.id === id ? { ...f, name: newName } : f));
+  };
+
+  const addFile = (file: File | string, isLink: boolean = false, customName?: string, folderId: number | null = null) => {
+    let newFile: any;
+    
+    if (isLink && typeof file === 'string') {
+      let url = file;
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+      newFile = { 
+        id: Date.now(),
+        name: customName || url, 
+        type: 'Link', 
+        size: '1 KB', 
+        url: url,
+        folderId: folderId
+      };
+    } else if (file instanceof File) {
+      newFile = { 
+        id: Date.now(),
+        name: customName || file.name, 
+        type: file.type || 'Document', 
+        size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`, 
+        fileBlob: file,
+        folderId: folderId
+      };
+    } else {
+      return;
+    }
+    
     setFiles([newFile, ...files]);
   };
 
@@ -74,22 +184,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addGoal = () => {
+    const today = new Date();
+    const nextMonth = new Date();
+    nextMonth.setMonth(today.getMonth() + 1);
+
     const newGoal = { 
       id: Date.now(),
       title: `New Goal ${goals.length + 1}`, 
+      description: '',
+      createdAt: today.toISOString(),
+      deadline: nextMonth.toISOString().split('T')[0], // yyyy-mm-dd format for input type="date"
       category: 'General', 
-      progress: 0, 
-      total: '100', 
-      current: '0', 
       color: 'bg-purple-500', 
-      iconColor: 'text-purple-500', 
-      iconBg: 'bg-purple-50 dark:bg-purple-500/10' 
     };
     setGoals([newGoal, ...goals]);
   };
 
+  const updateGoal = (id: number, updates: any) => {
+    setGoals(goals.map((g: any) => g.id === id ? { ...g, ...updates } : g));
+  };
+
   const deleteGoal = (id: number) => {
-    setGoals(goals.filter(g => g.id !== id));
+    setGoals(goals.filter((g: any) => g.id !== id));
   };
 
   const toggleMilestone = (id: number) => {
@@ -98,9 +214,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      habits, toggleHabitDay, addHabit,
-      files, addFile, deleteFile,
-      goals, addGoal, deleteGoal,
+      isDarkMode, toggleDarkMode,
+      habits, toggleHabitDate, addHabit, removeHabit,
+      files, addFile, deleteFile, updateFileName,
+      folders, addFolder, deleteFolder, updateFolderName,
+      goals, addGoal, deleteGoal, updateGoal,
       milestones, toggleMilestone,
       heatmapData
     }}>

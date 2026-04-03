@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Notebook - Habit Tracker</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&amp;family=Work+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-on-surface": "#f0f1f1",
+                        "secondary-container": "#d4d4d4",
+                        "outline": "#777777",
+                        "on-tertiary": "#e2e2e2",
+                        "surface-container-low": "#f3f3f4",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#1b1b1b",
+                        "on-background": "#1a1c1c",
+                        "surface": "#f9f9f9",
+                        "primary-container": "#3b3b3b",
+                        "on-primary-fixed": "#ffffff",
+                        "secondary-fixed-dim": "#ababab",
+                        "tertiary-container": "#747474",
+                        "primary": "#000000",
+                        "tertiary-fixed-dim": "#474747",
+                        "on-primary-fixed-variant": "#e2e2e2",
+                        "surface-dim": "#dadada",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#474747",
+                        "primary-fixed": "#5e5e5e",
+                        "on-surface": "#1a1c1c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#e2e2e2",
+                        "inverse-surface": "#2f3131",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#5e5e5e",
+                        "surface-container-high": "#e8e8e8",
+                        "on-secondary-fixed-variant": "#3b3b3b",
+                        "surface-container": "#eeeeee",
+                        "secondary-fixed": "#c6c6c6",
+                        "on-primary-container": "#ffffff",
+                        "on-tertiary-fixed": "#ffffff",
+                        "inverse-primary": "#c6c6c6",
+                        "on-tertiary-container": "#ffffff",
+                        "secondary": "#5e5e5e",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-fixed": "#1b1b1b",
+                        "tertiary": "#3b3b3b",
+                        "on-primary": "#e2e2e2",
+                        "surface-bright": "#f9f9f9",
+                        "background": "#f9f9f9",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c6c6c6",
+                        "primary-fixed-dim": "#474747",
+                        "tertiary-fixed": "#5e5e5e",
+                        "on-error-container": "#410002",
+                        "surface-variant": "#e2e2e2"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Work Sans"],
+                        "label": ["Space Grotesk"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .hand-drawn-border {
+            border: 2px solid black;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+        }
+        .heatmap-box {
+            border: 1.5px solid #000000;
+            border-radius: 4px 2px 5px 3px;
+        }
+        .sketch-underline {
+            background-image: linear-gradient(to right, #000 70%, transparent 70%);
+            background-position: bottom;
+            background-size: 8px 2px;
+            background-repeat: repeat-x;
+        }
+        .ink-bleed {
+            filter: blur(0.2px) contrast(1.2);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-white">
+<!-- Sidebar Navigation -->
+<nav class="fixed left-0 top-0 h-full w-64 bg-[#f9f9f9] border-r-2 border-black flex flex-col p-4 space-y-6 z-50">
+<div class="mb-8">
+<h1 class="text-xl font-black text-black font-headline uppercase tracking-tighter">Workspace</h1>
+<p class="text-[10px] font-label font-medium uppercase tracking-widest text-outline">Hand-drawn Productivity</p>
+</div>
+<div class="flex flex-col space-y-2 flex-grow">
+<a class="text-black px-4 py-2 border border-transparent hover:border-black transition-all font-label font-medium uppercase text-sm tracking-widest flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span> Dashboard
+            </a>
+<a class="text-black px-4 py-2 border border-transparent hover:border-black transition-all font-label font-medium uppercase text-sm tracking-widest flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-xl">folder_open</span> Resources
+            </a>
+<a class="bg-black text-white rounded-[4px_2px_5px_3px] px-4 py-2 font-label font-medium uppercase text-sm tracking-widest flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">history_edu</span> Habits
+            </a>
+<a class="text-black px-4 py-2 border border-transparent hover:border-black transition-all font-label font-medium uppercase text-sm tracking-widest flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-xl">emoji_events</span> Goals
+            </a>
+<a class="text-black px-4 py-2 border border-transparent hover:border-black transition-all font-label font-medium uppercase text-sm tracking-widest flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-xl">timer</span> Pomodoro
+            </a>
+<a class="text-black px-4 py-2 border border-transparent hover:border-black transition-all font-label font-medium uppercase text-sm tracking-widest flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-xl">settings</span> Settings
+            </a>
+</div>
+<button class="w-full bg-black text-white font-label font-bold py-3 hand-drawn-border flex items-center justify-center gap-2 hover:scale-95 transition-transform active:-rotate-1">
+<span class="material-symbols-outlined">add</span> New Entry
+        </button>
+</nav>
+<!-- Main Content -->
+<main class="ml-64 p-10 min-h-screen">
+<header class="flex justify-between items-end mb-12">
+<div>
+<h2 class="text-5xl font-black font-headline tracking-tighter uppercase mb-2">Habit Tracker</h2>
+<div class="flex items-center gap-4">
+<span class="font-label text-sm uppercase tracking-widest text-outline">Active Rhythms</span>
+<div class="h-[2px] w-24 bg-black"></div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-6 mb-4">
+<button class="hover:scale-110 transition-transform"><span class="material-symbols-outlined text-3xl">chevron_left</span></button>
+<span class="font-headline text-2xl font-bold uppercase tracking-widest">October 2024</span>
+<button class="hover:scale-110 transition-transform"><span class="material-symbols-outlined text-3xl">chevron_right</span></button>
+</div>
+<button class="group flex items-center gap-2 border-b-2 border-black pb-1 hover:pr-4 transition-all">
+<span class="material-symbols-outlined text-xl">add_circle</span>
+<span class="font-label font-bold uppercase tracking-tight">Add Habit</span>
+</button>
+</div>
+</header>
+<div class="grid grid-cols-12 gap-8">
+<!-- Bento Grid Left: Consistency Heatmap -->
+<section class="col-span-12 lg:col-span-8 bg-surface-container-lowest hand-drawn-border p-8 relative overflow-hidden">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h3 class="font-headline text-3xl font-extrabold uppercase mb-1">Consistency Heatmap</h3>
+<p class="font-body text-outline italic">Visualizing the flow of your dedication.</p>
+</div>
+<div class="flex gap-2 items-center">
+<span class="text-[10px] font-label uppercase">Less Ink</span>
+<div class="w-3 h-3 heatmap-box bg-surface"></div>
+<div class="w-3 h-3 heatmap-box bg-secondary-container"></div>
+<div class="w-3 h-3 heatmap-box bg-tertiary-container"></div>
+<div class="w-3 h-3 heatmap-box bg-black"></div>
+<span class="text-[10px] font-label uppercase">More Ink</span>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-3">
+<!-- Generating a sketchy heatmap grid -->
+<script>
+                        const heatmap = document.querySelector('.grid-cols-12.gap-3');
+                        const intensities = ['bg-surface', 'bg-surface', 'bg-surface-container', 'bg-secondary-container', 'bg-tertiary-container', 'bg-black'];
+                        for(let i=0; i<84; i++) {
+                            const intensity = intensities[Math.floor(Math.random() * intensities.length)];
+                            const box = document.createElement('div');
+                            box.className = `h-10 w-full heatmap-box ${intensity} transition-transform hover:scale-110 cursor-pointer`;
+                            heatmap.appendChild(box);
+                        }
+                    </script>
+</div>
+<div class="mt-8 pt-6 border-t-2 border-black flex justify-between items-center">
+<div class="flex gap-10">
+<div class="flex flex-col">
+<span class="text-[10px] font-label uppercase tracking-widest text-outline">Total Completions</span>
+<span class="text-3xl font-black font-headline">142</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-label uppercase tracking-widest text-outline">Monthly Goal</span>
+<span class="text-3xl font-black font-headline tracking-tighter">85%</span>
+</div>
+</div>
+<div class="flex -space-x-2">
+<div class="w-10 h-10 rounded-full border-2 border-black bg-surface-container-high flex items-center justify-center font-bold font-headline text-xs">M</div>
+<div class="w-10 h-10 rounded-full border-2 border-black bg-surface-container-high flex items-center justify-center font-bold font-headline text-xs">T</div>
+<div class="w-10 h-10 rounded-full border-2 border-black bg-surface-container-high flex items-center justify-center font-bold font-headline text-xs">W</div>
+<div class="w-10 h-10 rounded-full border-2 border-black bg-surface-container-high flex items-center justify-center font-bold font-headline text-xs">T</div>
+<div class="w-10 h-10 rounded-full border-2 border-black bg-surface-container-high flex items-center justify-center font-bold font-headline text-xs">F</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Right: Current Streak -->
+<section class="col-span-12 lg:col-span-4 bg-black text-white p-8 rounded-xl flex flex-col justify-center items-center text-center relative overflow-hidden">
+<div class="absolute top-4 left-4 opacity-20">
+<span class="material-symbols-outlined text-6xl">draw</span>
+</div>
+<span class="font-label uppercase tracking-[0.3em] text-on-tertiary mb-4">Current Streak</span>
+<div class="text-[120px] font-black font-headline leading-none -rotate-2 select-none">12</div>
+<span class="text-3xl font-bold font-headline uppercase tracking-tighter -mt-4">Days of Flow</span>
+<div class="mt-8 w-full border-t border-white/30 pt-6">
+<p class="text-sm font-body italic text-on-tertiary">"The stroke you make today defines the sketch of tomorrow."</p>
+</div>
+</section>
+<!-- Active Rhythms List -->
+<section class="col-span-12 space-y-6">
+<div class="flex items-center gap-4 mb-4">
+<h3 class="font-headline text-2xl font-bold uppercase tracking-tight">Active Rhythms</h3>
+<div class="flex-grow h-[1.5px] bg-outline-variant"></div>
+</div>
+<!-- Habit Card 1 -->
+<div class="group bg-surface hover:bg-surface-container transition-colors p-6 hand-drawn-border flex items-center gap-8 relative">
+<button class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-outline hover:text-black">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div class="flex-1">
+<h4 class="text-2xl font-bold font-headline mb-1 uppercase tracking-tight">Daily Exercise</h4>
+<div class="flex items-center gap-2 text-outline">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-xs font-label uppercase tracking-widest">6:00 AM • 45 Mins</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">M</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-black text-white hand-drawn-border">
+<span class="material-symbols-outlined">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">T</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-black text-white hand-drawn-border">
+<span class="material-symbols-outlined">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">W</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-surface hand-drawn-border">
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">T</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-black text-white hand-drawn-border">
+<span class="material-symbols-outlined">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">F</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-surface hand-drawn-border">
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">S</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-surface hand-drawn-border opacity-30">
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">S</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-surface hand-drawn-border opacity-30">
+</div>
+</div>
+</div>
+<div class="pl-8 border-l border-outline-variant text-right min-w-[100px]">
+<span class="text-[10px] font-label uppercase text-outline block">This Week</span>
+<span class="text-2xl font-black font-headline">4/7</span>
+</div>
+</div>
+<!-- Habit Card 2 -->
+<div class="group bg-surface hover:bg-surface-container transition-colors p-6 hand-drawn-border flex items-center gap-8 relative">
+<button class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-outline hover:text-black">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div class="flex-1">
+<h4 class="text-2xl font-bold font-headline mb-1 uppercase tracking-tight">Read 30 Mins</h4>
+<div class="flex items-center gap-2 text-outline">
+<span class="material-symbols-outlined text-sm">auto_stories</span>
+<span class="text-xs font-label uppercase tracking-widest">Evening Routine</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">M</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-black text-white hand-drawn-border">
+<span class="material-symbols-outlined">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">T</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-black text-white hand-drawn-border">
+<span class="material-symbols-outlined">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">W</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-black text-white hand-drawn-border">
+<span class="material-symbols-outlined">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">T</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-black text-white hand-drawn-border">
+<span class="material-symbols-outlined">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">F</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-black text-white hand-drawn-border">
+<span class="material-symbols-outlined">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">S</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-surface hand-drawn-border opacity-30">
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">S</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-surface hand-drawn-border opacity-30">
+</div>
+</div>
+</div>
+<div class="pl-8 border-l border-outline-variant text-right min-w-[100px]">
+<span class="text-[10px] font-label uppercase text-outline block">This Week</span>
+<span class="text-2xl font-black font-headline">5/7</span>
+</div>
+</div>
+<!-- Habit Card 3 -->
+<div class="group bg-surface hover:bg-surface-container transition-colors p-6 hand-drawn-border flex items-center gap-8 relative">
+<button class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-outline hover:text-black">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div class="flex-1">
+<h4 class="text-2xl font-bold font-headline mb-1 uppercase tracking-tight">Drink 2L Water</h4>
+<div class="flex items-center gap-2 text-outline">
+<span class="material-symbols-outlined text-sm">water_drop</span>
+<span class="text-xs font-label uppercase tracking-widest">Hydration Flow</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">M</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-black text-white hand-drawn-border">
+<span class="material-symbols-outlined">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">T</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-surface hand-drawn-border">
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">W</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-black text-white hand-drawn-border">
+<span class="material-symbols-outlined">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">T</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-surface hand-drawn-border">
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">F</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-black text-white hand-drawn-border">
+<span class="material-symbols-outlined">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">S</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-surface hand-drawn-border opacity-30">
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] font-label uppercase text-outline mb-1">S</span>
+<div class="w-10 h-10 border-2 border-black flex items-center justify-center bg-surface hand-drawn-border opacity-30">
+</div>
+</div>
+</div>
+<div class="pl-8 border-l border-outline-variant text-right min-w-[100px]">
+<span class="text-[10px] font-label uppercase text-outline block">This Week</span>
+<span class="text-2xl font-black font-headline">3/7</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Floating Decorative Element -->
+<div class="fixed bottom-10 right-10 pointer-events-none opacity-40">
+<div class="hand-drawn-border p-4 bg-surface text-primary rotate-12">
+<span class="font-headline font-black text-xl uppercase tracking-tighter">Draft 0.4</span>
+<div class="h-1 w-full bg-black mt-1"></div>
+</div>
+</div>
+</main>
+<!-- Sketchy Overlay Effect -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
+</body></html>
