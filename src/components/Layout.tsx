@@ -1,11 +1,62 @@
+import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FolderOpen, PenTool, Target, Timer, Settings, Search, Plus, Moon, Sun } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, PenTool, Target, Timer, Settings, Search, Plus, Moon, Sun, Cloud, RefreshCw } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAppContext } from '../context/AppContext';
+import { useGoogleLogin } from '@react-oauth/google';
+import { syncToDrive, hydrateFromDrive } from '../lib/gdrive';
 
 export default function Layout() {
-  const { isDarkMode, toggleDarkMode } = useAppContext();
+  const { isDarkMode, toggleDarkMode, habits, files, folders, goals, milestones, forceSetAllData, lastSynced, setLastSynced } = useAppContext();
   const location = useLocation();
+
+  const [driveToken, setDriveToken] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
+
+  const handleRestore = async (token: string) => {
+    try {
+        setSyncing(true);
+        const data = await hydrateFromDrive(token);
+        if (data) {
+            forceSetAllData(data);
+            setLastSynced(new Date());
+            // Optional: alert user quietly instead of popup
+            console.log("Restored from Google Drive successfully!");
+        }
+    } catch(e: any) {
+        console.error("Restore failed: " + e.message);
+    } finally {
+        setSyncing(false);
+    }
+  }
+
+  const login = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      setDriveToken(tokenResponse.access_token);
+      handleRestore(tokenResponse.access_token);
+    },
+    scope: 'https://www.googleapis.com/auth/drive'
+  });
+
+  const handleSync = async () => {
+      if (!driveToken) return login();
+      try {
+          setSyncing(true);
+          const data = { habits, files, folders, goals, milestones };
+          await syncToDrive(driveToken, data);
+          setLastSynced(new Date());
+          alert("Backup successfully synced to Drive!");
+      } catch(e: any) {
+          console.error("Sync failed: " + e.message);
+          alert("Sync failed: " + e.message);
+          if (e.message.includes('401')) { // Unauthorized / Expired
+             setDriveToken(null);
+             login();
+          }
+      } finally {
+          setSyncing(false);
+      }
+  }
 
   const navItems = [
     { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -30,6 +81,21 @@ export default function Layout() {
           </div>
         </div>
         <div className="flex items-center gap-6">
+          
+          <button 
+             onClick={handleSync} 
+             disabled={syncing}
+             className={cn(
+               "flex items-center gap-2 font-headline tracking-tight text-white px-3 py-1 uppercase text-sm hand-drawn-border transition-colors",
+               driveToken ? "bg-green-600 hover:bg-green-700 border-green-800" : "bg-primary hover:bg-primary/90",
+               syncing && "opacity-70 cursor-not-allowed"
+             )}
+          >
+            {syncing ? <RefreshCw size={16} className="animate-spin" /> : <Cloud size={16} />}
+            {driveToken ? "Sync Backup" : "Connect Drive"}
+          </button>
+          {lastSynced && <span className="text-xs text-outline font-label hidden lg:block">Synced: {lastSynced.toLocaleTimeString()}</span>}
+
           <button className="font-headline tracking-tight text-primary font-black underline decoration-2 underline-offset-4 hover:bg-surface-container-high transition-colors px-2 py-1 uppercase text-sm">Add New</button>
           <button onClick={toggleDarkMode} className="p-2 rounded-full hover:bg-surface-container-high transition-colors">
             {isDarkMode ? (

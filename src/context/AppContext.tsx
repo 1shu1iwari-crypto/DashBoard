@@ -13,14 +13,34 @@ const AppContext = createContext<any>(null);
 
 function usePersistedState<T>(key: string, initialValue: T) {
   const [state, setState] = useState<T>(initialValue);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     get(key).then(val => {
       if (val !== undefined && val !== null) {
         if (Array.isArray(initialValue) && !Array.isArray(val)) return;
         setState(val);
+      } else {
+        // Fallback to migrate legacy localStorage data
+        const localVal = localStorage.getItem(key);
+        if (localVal) {
+          try {
+            const parsed = JSON.parse(localVal);
+            if (Array.isArray(initialValue) && !Array.isArray(parsed)) {
+              // Expected array but didn't get one
+            } else {
+              setState(parsed);
+              // Migrate it to IndexedDB so it's only loading from IDB next time
+              set(key, parsed).catch(e => console.error("Migration to IDB failed:", e));
+            }
+          } catch (e) {
+            console.error('Failed to parse localStorage legacy data for', key, e);
+          }
+        }
       }
-    }).catch(e => console.error(e));
+    }).catch(e => console.error(e)).finally(() => {
+       setIsLoaded(true);
+    });
   }, [key]);
 
   const setPersistedState = (value: T | ((prev: T) => T)) => {
@@ -31,16 +51,20 @@ function usePersistedState<T>(key: string, initialValue: T) {
     });
   };
 
-  return [state, setPersistedState] as const;
+  return [state, setPersistedState, isLoaded] as const;
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [habits, setHabits] = usePersistedState<any[]>('notebook-habits', initialHabits);
-  const [files, setFiles] = usePersistedState<any[]>('notebook-files', initialFiles);
-  const [folders, setFolders] = usePersistedState<any[]>('notebook-folders', initialFolders);
-  const [goals, setGoals] = usePersistedState<any[]>('notebook-goals', initialGoals);
-  const [milestones, setMilestones] = usePersistedState<any[]>('notebook-milestones', initialMilestones);
+  const [habits, setHabits, habitsLoaded] = usePersistedState<any[]>('notebook-habits', initialHabits);
+  const [files, setFiles, filesLoaded] = usePersistedState<any[]>('notebook-files', initialFiles);
+  const [folders, setFolders, foldersLoaded] = usePersistedState<any[]>('notebook-folders', initialFolders);
+  const [goals, setGoals, goalsLoaded] = usePersistedState<any[]>('notebook-goals', initialGoals);
+  const [milestones, setMilestones, milestonesLoaded] = usePersistedState<any[]>('notebook-milestones', initialMilestones);
+
+  const isFullyHydrated = habitsLoaded && filesLoaded && foldersLoaded && goalsLoaded && milestonesLoaded;
   
+  const [lastSynced, setLastSynced] = useState<Date | null>(null);
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem('theme') === 'dark' || 
       (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -148,14 +172,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addFile = (file: File | string, isLink: boolean = false, customName?: string, folderId: number | null = null) => {
-    let newFile: any;
-    
     if (isLink && typeof file === 'string') {
       let url = file;
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = 'https://' + url;
       }
-      newFile = { 
+      const newFile = { 
         id: Date.now(),
         name: customName || url, 
         type: 'Link', 
@@ -163,20 +185,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         url: url,
         folderId: folderId
       };
+      setFiles((prev: any) => [newFile, ...prev]);
     } else if (file instanceof File) {
-      newFile = { 
-        id: Date.now(),
-        name: customName || file.name, 
-        type: file.type || 'Document', 
-        size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`, 
-        fileBlob: file,
-        folderId: folderId
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const newFile = { 
+          id: Date.now(),
+          name: customName || file.name, 
+          type: file.type || 'Document', 
+          size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`, 
+          dataUrl: reader.result,
+          folderId: folderId
+        };
+        setFiles((prev: any) => [newFile, ...prev]);
       };
-    } else {
-      return;
+      reader.readAsDataURL(file);
     }
-    
-    setFiles([newFile, ...files]);
   };
 
   const deleteFile = (id: number) => {
@@ -212,6 +236,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setMilestones(milestones.map(m => m.id === id ? { ...m, done: !m.done } : m));
   };
 
+  if (!isFullyHydrated) {
+    return (
+      <div className="flex bg-[#fdfcf9] items-center justify-center h-screen w-screen relative">
+         <div className="animate-pulse flex flex-col items-center">
+            <span className="font-headline font-black text-2xl uppercase tracking-widest text-[#111]">Loading Atelier...</span>
+         </div>
+      </div>
+    );
+  }
+
+  const forceSetAllData = (data: any) => {
+    if (data.habits) setHabits(data.habits);
+    if (data.files) setFiles(data.files);
+    if (data.folders) setFolders(data.folders);
+    if (data.goals) setGoals(data.goals);
+    if (data.milestones) setMilestones(data.milestones);
+  };
+
   return (
     <AppContext.Provider value={{
       isDarkMode, toggleDarkMode,
@@ -220,7 +262,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       folders, addFolder, deleteFolder, updateFolderName,
       goals, addGoal, deleteGoal, updateGoal,
       milestones, toggleMilestone,
-      heatmapData
+      heatmapData, forceSetAllData,
+      lastSynced, setLastSynced
     }}>
       {children}
     </AppContext.Provider>

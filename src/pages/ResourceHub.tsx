@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Upload, Link as LinkIcon, FileText, Image as ImageIcon, X, ArrowRight, PlusCircle, PenTool, Folder, ArrowLeft } from 'lucide-react';
+import { Upload, Link as LinkIcon, FileText, Image as ImageIcon, X, ArrowRight, PlusCircle, PenTool, Folder, ArrowLeft, Cloud, CloudOff } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAppContext } from '../context/AppContext';
 
 export default function ResourceHub() {
-  const { files, addFile, deleteFile, updateFileName, folders, addFolder, deleteFolder, updateFolderName } = useAppContext();
+  const { files, addFile, deleteFile, updateFileName, folders, addFolder, deleteFolder, updateFolderName, lastSynced } = useAppContext();
   const [linkInput, setLinkInput] = useState('');
   const [linkNameInput, setLinkNameInput] = useState('');
   const [folderNameInput, setFolderNameInput] = useState('');
@@ -69,6 +69,13 @@ export default function ResourceHub() {
   const handleOpenAsset = (file: any) => {
     if (file.url) {
       window.open(file.url, '_blank');
+    } else if (file.dataUrl) {
+      const win = window.open('', '_blank');
+      if (win) {
+         fetch(file.dataUrl).then(res => res.blob()).then(blob => {
+             win.location.href = URL.createObjectURL(blob);
+         });
+      }
     } else if (file.fileBlob) {
       const objectUrl = URL.createObjectURL(file.fileBlob);
       window.open(objectUrl, '_blank');
@@ -281,9 +288,20 @@ export default function ResourceHub() {
               </div>
               
               <div>
-                <span className="font-label text-[10px] uppercase tracking-widest bg-surface-container-highest px-2 py-0.5 sketch-border-sm w-fit inline-block mb-3">
-                  {file.type ? file.type.split(' ')[0] : 'Asset'}
-                </span>
+                <div className="flex gap-2 mb-3">
+                  <span className="font-label text-[10px] uppercase tracking-widest bg-surface-container-highest px-2 py-0.5 sketch-border-sm w-fit inline-block">
+                    {file.type ? file.type.split(' ')[0] : 'Asset'}
+                  </span>
+                  {lastSynced && file.id < lastSynced.getTime() ? (
+                    <span className="font-label text-[10px] uppercase tracking-widest bg-green-100 text-green-800 px-2 py-0.5 sketch-border-sm w-fit inline-flex items-center gap-1" title="Backed up to Google Drive">
+                      <Cloud size={10} /> Synced
+                    </span>
+                  ) : (
+                    <span className="font-label text-[10px] uppercase tracking-widest bg-amber-100 text-amber-800 px-2 py-0.5 sketch-border-sm w-fit inline-flex items-center gap-1" title="Not yet backed up">
+                      <CloudOff size={10} /> Pending Sync
+                    </span>
+                  )}
+                </div>
                 
                 {editingFileId === file.id ? (
                   <div className="mb-2" onClick={e => e.stopPropagation()}>

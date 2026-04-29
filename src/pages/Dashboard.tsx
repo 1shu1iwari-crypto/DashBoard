@@ -16,6 +16,13 @@ export default function Dashboard() {
     } else {
       if (item.url) {
         window.open(item.url, '_blank');
+      } else if (item.dataUrl) {
+        const win = window.open('', '_blank');
+        if (win) {
+           fetch(item.dataUrl).then(res => res.blob()).then(blob => {
+               win.location.href = URL.createObjectURL(blob);
+           });
+        }
       } else if (item.fileBlob) {
         const objectUrl = URL.createObjectURL(item.fileBlob);
         window.open(objectUrl, '_blank');
